@@ -19,12 +19,15 @@ public class Category implements Serializable{
     @Column(nullable = false, length = 32)
     private String id;
     private String label;
-    private Date createTime;
+    private Date verDate;
     @ManyToOne(targetEntity = User.class,fetch = FetchType.LAZY)
     private User user;
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinTable(name = "mb_cate_post", joinColumns = { @JoinColumn(name = "cate_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "post_id", referencedColumnName = "id") })
-    private Set<Post> postSet;
+    @ManyToMany(mappedBy = "categorySet",fetch = FetchType.LAZY)
+    private Set<SavePost> savePostSet;
+    @ManyToMany(mappedBy = "categorySet",fetch = FetchType.LAZY)
+    private Set<PublishPost> pubPostSet;
+    @ManyToMany(mappedBy = "categorySet",fetch = FetchType.LAZY)
+    private Set<VersionPost> verPostSet;
 
     public String getId() {
         return id;
@@ -42,12 +45,12 @@ public class Category implements Serializable{
         this.label = label;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getVerDate() {
+        return verDate;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setVerDate(Date verDate) {
+        this.verDate = verDate;
     }
 
     public User getUser() {
@@ -58,11 +61,27 @@ public class Category implements Serializable{
         this.user = user;
     }
 
-    public Set<Post> getPostSet() {
-        return postSet;
+    public Set<SavePost> getSavePostSet() {
+        return savePostSet;
     }
 
-    public void setPostSet(Set<Post> postSet) {
-        this.postSet = postSet;
+    public void setSavePostSet(Set<SavePost> savePostSet) {
+        this.savePostSet = savePostSet;
+    }
+
+    public Set<PublishPost> getPubPostSet() {
+        return pubPostSet;
+    }
+
+    public void setPubPostSet(Set<PublishPost> pubPostSet) {
+        this.pubPostSet = pubPostSet;
+    }
+
+    public Set<VersionPost> getVerPostSet() {
+        return verPostSet;
+    }
+
+    public void setVerPostSet(Set<VersionPost> verPostSet) {
+        this.verPostSet = verPostSet;
     }
 }

@@ -3,7 +3,7 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://localhost:3306/macro_blog
+    url: jdbc:mysql://localhost:3306/macro_blog?characterEncoding=utf8&useSSL=true&serverTimezone=UTC
     username: root
     password: toor
   redis:

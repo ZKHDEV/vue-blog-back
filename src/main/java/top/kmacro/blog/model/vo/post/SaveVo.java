@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * Created by Zhangkh on 2017-09-02.
@@ -17,16 +18,14 @@ public class SaveVo {
     private String title;
     @NotEmpty(message = "-20:正文不能为空")
     private String content;
-    private Integer wordNum;
     private String cover;
     @NotEmpty(message = "-30:摘要不能为空")
     @Length(max = 200, message = "-31:摘要长度须小于200字节")
     private String summary;
     private String[] tagList;
     private Byte type;
-    private Byte state;
-    private Boolean top;
     private String[] cateIds;
+    private String verDate;
 
     public String getId() {
         return id;
@@ -52,14 +51,6 @@ public class SaveVo {
         this.content = content;
     }
 
-    public Integer getWordNum() {
-        return wordNum;
-    }
-
-    public void setWordNum(Integer wordNum) {
-        this.wordNum = wordNum;
-    }
-
     public String getCover() {
         return cover;
     }
@@ -76,30 +67,6 @@ public class SaveVo {
         this.summary = summary;
     }
 
-    public Byte getType() {
-        return type;
-    }
-
-    public void setType(Byte type) {
-        this.type = type;
-    }
-
-    public Byte getState() {
-        return state;
-    }
-
-    public void setState(Byte state) {
-        this.state = state;
-    }
-
-    public Boolean getTop() {
-        return top;
-    }
-
-    public void setTop(Boolean top) {
-        this.top = top;
-    }
-
     public String[] getTagList() {
         return tagList;
     }
@@ -108,11 +75,27 @@ public class SaveVo {
         this.tagList = tagList;
     }
 
+    public Byte getType() {
+        return type;
+    }
+
+    public void setType(Byte type) {
+        this.type = type;
+    }
+
     public String[] getCateIds() {
         return cateIds;
     }
 
     public void setCateIds(String[] cateIds) {
         this.cateIds = cateIds;
+    }
+
+    public String getVerDate() {
+        return verDate;
+    }
+
+    public void setVerDate(String verDate) {
+        this.verDate = verDate;
     }
 }

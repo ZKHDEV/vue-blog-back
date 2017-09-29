@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import top.kmacro.blog.model.vo.Response;
 import top.kmacro.blog.model.vo.user.LoginVo;
+import top.kmacro.blog.model.vo.user.ShowVo;
 import top.kmacro.blog.security.IgnoreSecurity;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.UserService;
@@ -96,5 +97,15 @@ public class AccountController extends BaseController {
 //            return new Response(0,"验证码发送成功");
             return new Response(0,"验证码发送成功", code);
         }
+    }
+
+    @IgnoreSecurity
+    @GetMapping("/get_user/{phone}")
+    public Response getUser(@PathVariable("phone") String phone) {
+        ShowVo showVo = userService.getUserByPhone(phone);
+        if(showVo == null){
+            return new Response(-10,"手机号不存在");
+        }
+        return new Response(0,"success", showVo);
     }
 }

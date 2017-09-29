@@ -3,14 +3,14 @@ package top.kmacro.blog.model.vo;
 /**
  * Created by Zhangkh on 2017-09-14.
  */
-public class PageVo {
+public class PageVo<T> {
     private Long total;
-    private Object data;
+    private T data;
 
     public PageVo() {
     }
 
-    public PageVo(Long total, Object data) {
+    public PageVo(Long total, T data) {
         this.total = total;
         this.data = data;
     }
@@ -27,7 +27,7 @@ public class PageVo {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

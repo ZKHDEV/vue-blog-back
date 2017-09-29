@@ -1,27 +1,18 @@
 package top.kmacro.blog.service.impl;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import top.kmacro.blog.dao.CategoryDao;
-import top.kmacro.blog.dao.PostDao;
 import top.kmacro.blog.dao.UserDao;
 import top.kmacro.blog.model.Category;
-import top.kmacro.blog.model.Post;
 import top.kmacro.blog.model.User;
 import top.kmacro.blog.model.vo.KValueVo;
-import top.kmacro.blog.model.vo.post.SearchResultVo;
-import top.kmacro.blog.model.vo.post.SearchVo;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.CategoryService;
 
 import javax.persistence.criteria.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

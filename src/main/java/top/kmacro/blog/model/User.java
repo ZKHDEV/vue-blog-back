@@ -20,6 +20,8 @@ public class User implements Serializable{
     private String id;
     @Column(nullable = false)
     private String phone;
+    private String nickName;
+    private String avatar;
     private String code;
     private String token;
     @Column(nullable = false)
@@ -27,51 +29,24 @@ public class User implements Serializable{
     private Date overTime;
     @Column(nullable = false)
     private Date signTime;
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<Post> postSet;
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private Set<SavePost> savePostSet;
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private Set<PublishPost> pubPostSet;
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private Set<VersionPost> verPostSet;
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private Set<Category> categorySet;
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinTable(name = "mb_fav_post", joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "post_id", referencedColumnName = "id") })
-    private Set<Post> favPostSet;
-    @OneToMany(mappedBy = "srcUser",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private Set<PublishPost> favPostSet;
+    @OneToMany(mappedBy = "srcUser",fetch = FetchType.LAZY)
     private Set<Message> sendMsgSet;
-    @OneToMany(mappedBy = "tarUser",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tarUser",fetch = FetchType.LAZY)
     private Set<Message> receiveMsgSet;
 //    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 //    private Set<Notice> noticeSet;
 
-    public Set<Message> getSendMsgSet() {
-        return sendMsgSet;
-    }
-
-    public void setSendMsgSet(Set<Message> sendMsgSet) {
-        this.sendMsgSet = sendMsgSet;
-    }
-
-    public Set<Message> getReceiveMsgSet() {
-        return receiveMsgSet;
-    }
-
-    public void setReceiveMsgSet(Set<Message> receiveMsgSet) {
-        this.receiveMsgSet = receiveMsgSet;
-    }
-
-//    public Set<Notice> getNoticeSet() {
-//        return noticeSet;
-//    }
-//
-//    public void setNoticeSet(Set<Notice> noticeSet) {
-//        this.noticeSet = noticeSet;
-//    }
-
-    public Set<Post> getFavPostSet() {
-        return favPostSet;
-    }
-
-    public void setFavPostSet(Set<Post> favPostSet) {
-        this.favPostSet = favPostSet;
-    }
 
     public String getId() {
         return id;
@@ -87,6 +62,22 @@ public class User implements Serializable{
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getCode() {
@@ -129,12 +120,28 @@ public class User implements Serializable{
         this.signTime = signTime;
     }
 
-    public Set<Post> getPostSet() {
-        return postSet;
+    public Set<SavePost> getSavePostSet() {
+        return savePostSet;
     }
 
-    public void setPostSet(Set<Post> postSet) {
-        this.postSet = postSet;
+    public void setSavePostSet(Set<SavePost> savePostSet) {
+        this.savePostSet = savePostSet;
+    }
+
+    public Set<PublishPost> getPubPostSet() {
+        return pubPostSet;
+    }
+
+    public void setPubPostSet(Set<PublishPost> pubPostSet) {
+        this.pubPostSet = pubPostSet;
+    }
+
+    public Set<VersionPost> getVerPostSet() {
+        return verPostSet;
+    }
+
+    public void setVerPostSet(Set<VersionPost> verPostSet) {
+        this.verPostSet = verPostSet;
     }
 
     public Set<Category> getCategorySet() {
@@ -143,5 +150,29 @@ public class User implements Serializable{
 
     public void setCategorySet(Set<Category> categorySet) {
         this.categorySet = categorySet;
+    }
+
+    public Set<PublishPost> getFavPostSet() {
+        return favPostSet;
+    }
+
+    public void setFavPostSet(Set<PublishPost> favPostSet) {
+        this.favPostSet = favPostSet;
+    }
+
+    public Set<Message> getSendMsgSet() {
+        return sendMsgSet;
+    }
+
+    public void setSendMsgSet(Set<Message> sendMsgSet) {
+        this.sendMsgSet = sendMsgSet;
+    }
+
+    public Set<Message> getReceiveMsgSet() {
+        return receiveMsgSet;
+    }
+
+    public void setReceiveMsgSet(Set<Message> receiveMsgSet) {
+        this.receiveMsgSet = receiveMsgSet;
     }
 }

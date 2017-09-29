@@ -1,9 +1,11 @@
 package top.kmacro.blog.service.impl;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.kmacro.blog.dao.UserDao;
 import top.kmacro.blog.model.User;
+import top.kmacro.blog.model.vo.user.ShowVo;
 import top.kmacro.blog.service.UserService;
 
 /**
@@ -33,5 +35,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         return userDao.save(user);
+    }
+
+    @Override
+    public ShowVo getUserByPhone(String phone) {
+        User user = userDao.findByPhone(phone);
+        if(user != null){
+            ShowVo showVo = new ShowVo();
+            BeanUtils.copyProperties(user,showVo);
+            return showVo;
+        }
+        return null;
     }
 }

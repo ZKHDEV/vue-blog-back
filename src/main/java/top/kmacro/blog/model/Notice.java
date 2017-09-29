@@ -3,7 +3,6 @@ package top.kmacro.blog.model;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Created by Zhangkh on 2017-09-14.

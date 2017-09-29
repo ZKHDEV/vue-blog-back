@@ -19,16 +19,16 @@ public class Comment implements Serializable{
     @Column(nullable = false, length = 32)
     private String id;
     private String content;
-    private Date createTime;
+    private Date verDate;
     @ManyToOne(targetEntity = User.class,fetch = FetchType.LAZY)
     @JoinColumn(name="src_user_id")
     private User srcUser;
     @ManyToOne(targetEntity = User.class,fetch = FetchType.LAZY)
     @JoinColumn(name="tar_user_id")
     private User tarUser;
-    @ManyToOne(targetEntity = Post.class,fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = PublishPost.class,fetch = FetchType.LAZY)
     @JoinColumn(name="post_id")
-    private Post post;
+    private PublishPost post;
     @ManyToOne(targetEntity = Comment.class,fetch = FetchType.LAZY)
     @JoinColumn(name="par_comment_id")
     private Comment parComment;
@@ -51,12 +51,12 @@ public class Comment implements Serializable{
         this.content = content;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    public Date getVerDate() {
+        return verDate;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setVerDate(Date verDate) {
+        this.verDate = verDate;
     }
 
     public User getSrcUser() {
@@ -75,11 +75,11 @@ public class Comment implements Serializable{
         this.tarUser = tarUser;
     }
 
-    public Post getPost() {
+    public PublishPost getPost() {
         return post;
     }
 
-    public void setPost(Post post) {
+    public void setPost(PublishPost post) {
         this.post = post;
     }
 
