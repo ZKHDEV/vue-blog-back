@@ -11,6 +11,7 @@ import top.kmacro.blog.dao.PubPostDao;
 import top.kmacro.blog.model.Category;
 import top.kmacro.blog.model.PublishPost;
 import top.kmacro.blog.model.vo.PageVo;
+import top.kmacro.blog.model.vo.post.PageSearchVo;
 import top.kmacro.blog.model.vo.post.PostVo;
 import top.kmacro.blog.service.PubPostService;
 import top.kmacro.blog.utils.DateTimeUtils;
@@ -49,14 +50,14 @@ public class PubPostServiceImpl implements PubPostService {
     }
 
     @Override
-    public PageVo getPagePostByUserPhone(String userPhone, Integer pageSize, Integer pageNum) {
+    public PageVo getPage(PageSearchVo pageSearchVo) {
         Sort.Order topOrder = new Sort.Order(Sort.Direction.DESC, "top");
         Sort.Order dateOrder = new Sort.Order(Sort.Direction.DESC, "createDate");
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(topOrder);
         orderList.add(dateOrder);
         Sort sort = new Sort(orderList);
-        Page<PublishPost> postPage = pubPostDao.findAllByUser_PhoneAndShow(userPhone,true,new PageRequest(pageNum - 1, pageSize, sort));
+        Page<PublishPost> postPage = pubPostDao.findAllByUser_PhoneAndDisplay(pageSearchVo.getPhone(),true,new PageRequest(pageSearchVo.getPageNum() - 1, pageSearchVo.getPageSize(), sort));
 
         // 格式化查询结果
         List<PostVo> resultList = new ArrayList<PostVo>();
@@ -70,7 +71,7 @@ public class PubPostServiceImpl implements PubPostService {
 
     @Override
     public PostVo getPost(String id) {
-        PublishPost publishPost = pubPostDao.findByIdAndShow(id,true);
+        PublishPost publishPost = pubPostDao.findByIdAndDisplay(id,true);
         if(publishPost != null){
             return parsePubPostToPostVo(publishPost);
         }

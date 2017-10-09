@@ -11,7 +11,7 @@ import java.util.List;
 public interface CategoryService {
     void save(String id, String label);
     void delete(String id);
-    List<KValueVo> getSelect();
+    List<KValueVo> getAllKVList();
     Boolean labelExisted(String id, String label);
-    KValueVo getSelectOne(String label);
+    KValueVo getOneKVByLabel(String label);
 }

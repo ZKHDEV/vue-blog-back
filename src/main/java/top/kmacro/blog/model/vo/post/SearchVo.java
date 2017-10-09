@@ -10,6 +10,7 @@ public class SearchVo {
     private String cateId;
     private String tags;
     private Boolean top;
+    private Byte state;
     private String start;
     private String end;
     private Integer pageNum;
@@ -79,6 +80,14 @@ public class SearchVo {
 
     public void setTop(Boolean top) {
         this.top = top;
+    }
+
+    public Byte getState() {
+        return state;
+    }
+
+    public void setState(Byte state) {
+        this.state = state;
     }
 
     public String getStart() {

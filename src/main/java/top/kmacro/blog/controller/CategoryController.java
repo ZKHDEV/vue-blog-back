@@ -28,12 +28,6 @@ public class CategoryController extends BaseController {
     @Autowired
     private CategoryService categoryService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private TokenManager tokenManager;
-
     @PostMapping("/save")
     public Response save(@Valid @RequestBody SaveVo saveVo, BindingResult result){
         if(result.hasErrors()){
@@ -47,7 +41,7 @@ public class CategoryController extends BaseController {
         categoryService.save(saveVo.getId(), saveVo.getLabel());
 
         // 获取分类KV
-        KValueVo kValueVo = categoryService.getSelectOne(saveVo.getLabel());
+        KValueVo kValueVo = categoryService.getOneKVByLabel(saveVo.getLabel());
 
         return new Response(0,"success", kValueVo);
     }
@@ -58,8 +52,8 @@ public class CategoryController extends BaseController {
         return new Response(0,"success");
     }
 
-    @GetMapping("/get_select")
-    public Response getSelect(){
-        return new Response(0,"success", categoryService.getSelect());
+    @GetMapping("/get_all_kv_list")
+    public Response getAllKVList(){
+        return new Response(0,"success", categoryService.getAllKVList());
     }
 }

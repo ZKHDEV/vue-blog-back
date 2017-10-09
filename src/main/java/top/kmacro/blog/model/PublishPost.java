@@ -1,6 +1,7 @@
 package top.kmacro.blog.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class PublishPost extends BasePost{
     private Integer readNum;
     private Integer likeNum;
     private Boolean top;
-    private Boolean show;
+    private Boolean display;
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name = "mb_cate_post_pub", joinColumns = { @JoinColumn(name = "post_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "cate_id", referencedColumnName = "id") })
     private Set<Category> categorySet;
@@ -29,7 +30,7 @@ public class PublishPost extends BasePost{
         readNum = 0;
         likeNum = 0;
         top = false;
-        show = true;
+        display = true;
     }
 
     public String getId() {
@@ -96,11 +97,11 @@ public class PublishPost extends BasePost{
         this.commentSet = commentSet;
     }
 
-    public Boolean getShow() {
-        return show;
+    public Boolean getDisplay() {
+        return display;
     }
 
-    public void setShow(Boolean show) {
-        this.show = show;
+    public void setDisplay(Boolean display) {
+        this.display = display;
     }
 }

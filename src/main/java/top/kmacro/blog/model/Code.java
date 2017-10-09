@@ -4,13 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * Created by Zhangkh on 2017-09-14.
  */
 @Entity
 @Table(name = "mb_code")
-public class Code {
+public class Code implements Serializable{
     @Id
     @Column(nullable = false)
     private Integer val;

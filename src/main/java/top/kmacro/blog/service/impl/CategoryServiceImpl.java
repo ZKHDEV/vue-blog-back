@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import top.kmacro.blog.dao.CategoryDao;
-import top.kmacro.blog.dao.UserDao;
-import top.kmacro.blog.model.Category;
-import top.kmacro.blog.model.User;
+import top.kmacro.blog.dao.*;
+import top.kmacro.blog.model.*;
 import top.kmacro.blog.model.vo.KValueVo;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.CategoryService;
@@ -31,7 +29,13 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryDao categoryDao;
 
     @Autowired
-    private PostDao postDao;
+    private SavePostDao savePostDao;
+
+    @Autowired
+    private PubPostDao pubPostDao;
+
+    @Autowired
+    private VerPostDao verPostDao;
 
     @Autowired
     private TokenManager tokenManager;
@@ -45,14 +49,14 @@ public class CategoryServiceImpl implements CategoryService {
 
         if(category == null){
             category = new Category();
-            category.setCreateTime(new Date());
+            category.setCreateDate(new Date());
 
             User user = userDao.findByToken(tokenManager.currentToken());
             category.setUser(user);
         }
 
         category.setLabel(label);
-
+        category.setVerDate(new Date());
         categoryDao.save(category);
     }
 
@@ -60,29 +64,46 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(String id) {
         Category category = categoryDao.findOne(id);
         if(category != null){
-            Set<Post> postList = postDao.findAllByCategorySetContains(category);
-            for (Post post : postList){
-                Set<Category> categorySet = post.getCategorySet();
-                categorySet.remove(category);
-                post.setCategorySet(categorySet);
-                postDao.save(post);
+            //移除分类为删除分类的编辑文章的分类对象
+            Set<SavePost> savePostSet = savePostDao.findAllByCategorySetContains(category);
+            if(savePostSet != null && savePostSet.size() > 0){
+                for (SavePost savePost : savePostSet){
+                    savePost.getCategorySet().remove(category);
+                    savePostDao.save(savePost);
+                }
             }
-
+            //移除分类为删除分类的发布文章的分类对象
+            Set<PublishPost> pubPostSet = pubPostDao.findAllByCategorySetContains(category);
+            if(pubPostSet != null && pubPostSet.size() > 0){
+                for (PublishPost publishPost : pubPostSet){
+                    publishPost.getCategorySet().remove(category);
+                    pubPostDao.save(publishPost);
+                }
+            }
+            //移除分类为删除分类的版本文章的分类对象
+            Set<VersionPost> verPostSet = verPostDao.findAllByCategorySetContains(category);
+            if(verPostSet != null && verPostSet.size() > 0){
+                for (VersionPost versionPost : verPostSet){
+                    versionPost.getCategorySet().remove(category);
+                    verPostDao.save(versionPost);
+                }
+            }
+            //删除分类
             categoryDao.delete(id);
         }
     }
 
     @Override
-    public List<KValueVo> getSelect() {
-        Set<Category> categorySet = categoryDao.findAllByUser_TokenOrderByCreateTimeAsc(tokenManager.currentToken());
+    public List<KValueVo> getAllKVList() {
+        List<Category> categorySet = categoryDao.findAllByUser_TokenOrderByCreateDateAsc(tokenManager.currentToken());
 
         // 格式化查询结果
-        List<KValueVo> resultList = new ArrayList<KValueVo>();
+        List<KValueVo> kValueVoList = new ArrayList<KValueVo>();
         for(Category category : categorySet){
             KValueVo kValueVo = new KValueVo(category.getId(),category.getLabel());
-            resultList.add(kValueVo);
+            kValueVoList.add(kValueVo);
         }
-        return resultList;
+        return kValueVoList;
     }
 
     @Override
@@ -95,6 +116,7 @@ public class CategoryServiceImpl implements CategoryService {
                     predicates.add(criteriaBuilder.notEqual(root.get("id"), id));
                 }
                 predicates.add(criteriaBuilder.equal(root.get("label"), label));
+                predicates.add(criteriaBuilder.equal(root.join("user").get("token"),tokenManager.currentToken()));
                 criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
                 return null;
             }
@@ -102,14 +124,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public KValueVo getSelectOne(String label) {
+    public KValueVo getOneKVByLabel(String label) {
         Category category = categoryDao.findByLabelAndUser_Token(label,tokenManager.currentToken());
-        KValueVo kValueVo = null;
         if(category != null){
-            kValueVo = new KValueVo();
+            KValueVo kValueVo = new KValueVo();
             kValueVo.setTxt(category.getLabel());
             kValueVo.setVal(category.getId());
+            return kValueVo;
         }
-        return kValueVo;
+        return null;
     }
 }

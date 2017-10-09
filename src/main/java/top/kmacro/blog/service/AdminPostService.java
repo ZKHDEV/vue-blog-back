@@ -1,6 +1,7 @@
 package top.kmacro.blog.service;
 
 import top.kmacro.blog.model.vo.PageVo;
+import top.kmacro.blog.model.vo.post.PublishVo;
 import top.kmacro.blog.model.vo.post.SaveVo;
 import top.kmacro.blog.model.vo.post.SearchVo;
 
@@ -12,6 +13,8 @@ public interface AdminPostService {
     void delete(String... ids);
     void recycle(String... ids);
     void recover(String... ids);
-    void publish(String id);
+    void publish(PublishVo publishVo);
     void unpublish(String id);
+    PublishVo getPublishPost(String id);
+    void top(PublishVo publishVo);
 }

@@ -19,6 +19,7 @@ public class Category implements Serializable{
     @Column(nullable = false, length = 32)
     private String id;
     private String label;
+    private Date createDate;
     private Date verDate;
     @ManyToOne(targetEntity = User.class,fetch = FetchType.LAZY)
     private User user;
@@ -43,6 +44,14 @@ public class Category implements Serializable{
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     public Date getVerDate() {

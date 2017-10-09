@@ -11,8 +11,8 @@ import top.kmacro.blog.dao.*;
 import top.kmacro.blog.model.*;
 import top.kmacro.blog.model.vo.PageVo;
 import top.kmacro.blog.model.vo.post.PostVo;
+import top.kmacro.blog.model.vo.post.PublishVo;
 import top.kmacro.blog.model.vo.post.SaveVo;
-import top.kmacro.blog.model.vo.post.SearchResultVo;
 import top.kmacro.blog.model.vo.post.SearchVo;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.AdminPostService;
@@ -20,8 +20,6 @@ import top.kmacro.blog.utils.CommonUtils;
 import top.kmacro.blog.utils.DateTimeUtils;
 
 import javax.persistence.criteria.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -60,9 +58,7 @@ public class AdminPostServiceImpl implements AdminPostService {
                 if(!StringUtils.isEmpty(searchVo.getCateId())){
                     predicates.add(criteriaBuilder.equal(root.join("categorySet").get("id"),searchVo.getCateId()));
                 }
-                if(searchVo.getTop() != null){
-                    predicates.add(criteriaBuilder.equal(root.get("top"),searchVo.getTop()));
-                }
+
                 if(!StringUtils.isEmpty(searchVo.getStart()) && !StringUtils.isEmpty(searchVo.getEnd())){
                     Date start = DateTimeUtils.stringToDate(DateTimeUtils.YMD,searchVo.getStart().trim());
                     Date end = DateTimeUtils.stringToDate(DateTimeUtils.YMD,searchVo.getStart().trim());
@@ -72,7 +68,7 @@ public class AdminPostServiceImpl implements AdminPostService {
                 predicates.add(criteriaBuilder.equal(root.join("user").get("token"),tokenManager.currentToken()));
 
                 if(StringUtils.isEmpty(searchVo.getOrderCol())){
-                    searchVo.setOrderCol("createTime");
+                    searchVo.setOrderCol("createDate");
                 }
 
                 Order order = searchVo.getAsc()
@@ -89,16 +85,31 @@ public class AdminPostServiceImpl implements AdminPostService {
         List<PostVo> resultList = new ArrayList<PostVo>();
         for(SavePost post : postPage.getContent()){
             PostVo postVo = new PostVo();
-            BeanUtils.copyProperties(post,postVo);
-
             //查询文章发布信息
-            PublishPost publishPost = pubPostDao.findOne(post.getId());
+            PublishPost publishPost = pubPostDao.findByIdAndDisplay(post.getId(),true);
+
             if(publishPost != null){
+                if(searchVo.getState() != null && searchVo.getState() != (byte)1){
+                    continue;
+                }
+                //筛选（非）置顶文章
+                if(searchVo.getTop() != null){
+                    if(!searchVo.getTop().equals(publishPost.getTop())){
+                        continue;
+                    }
+                }
+                //填充文章发布信息
                 postVo.setReadNum(publishPost.getReadNum());
                 postVo.setLikeNum(publishPost.getLikeNum());
                 postVo.setCommentNum(publishPost.getCommentSet().size());
                 postVo.setTop(publishPost.getTop());
+                postVo.setState((byte)1);
+            } else {
+                if(searchVo.getState() != null && searchVo.getState() != (byte)0){
+                    continue;
+                }
             }
+            BeanUtils.copyProperties(post,postVo);
 
             //文章类别信息处理
             Set<Category> categorySet = post.getCategorySet();
@@ -150,7 +161,9 @@ public class AdminPostServiceImpl implements AdminPostService {
             savePost.setCreateDate(new Date());
         }
 
+        String id = savePost.getId();
         BeanUtils.copyProperties(saveVo, savePost);
+        savePost.setId(id);
         savePost.setVerDate(new Date());
         savePost.setTags(String.join(",", saveVo.getTagList()));
 
@@ -212,7 +225,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     @Override
     public void recycle(String... ids) {
         Set<SavePost> savePosts = savePostDao.findAllByRecycleAndIdIn(false,ids);
-        Set<PublishPost> publishPosts = pubPostDao.findAllByShowAndIdIn(true,ids);
+        Set<PublishPost> publishPosts = pubPostDao.findAllByDisplayAndIdIn(true,ids);
         //设置文章为回收状态
         if(savePosts != null && savePosts.size() > 0){
             for (SavePost savePost : savePosts){
@@ -223,7 +236,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         //下架回收的已发布文章
         if(publishPosts != null && publishPosts.size() > 0){
             for (PublishPost publishPost : publishPosts){
-                publishPost.setShow(false);
+                publishPost.setDisplay(false);
                 pubPostDao.save(publishPost);
             }
         }
@@ -241,10 +254,10 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public void publish(String id) {
-        SavePost savePost = savePostDao.findOne(id);
+    public void publish(PublishVo publishVo) {
+        SavePost savePost = savePostDao.findOne(publishVo.getId());
         if(savePost != null){
-            PublishPost publishPost = pubPostDao.findOne(id);
+            PublishPost publishPost = pubPostDao.findOne(publishVo.getId());
             if(publishPost == null){
                 publishPost = new PublishPost();
                 BeanUtils.copyProperties(savePost,publishPost);
@@ -255,17 +268,41 @@ public class AdminPostServiceImpl implements AdminPostService {
                 BeanUtils.copyProperties(savePost,publishPost);
 
                 publishPost.setCreateDate(createDate);
-                publishPost.setShow(true);
             }
+            publishPost.setDisplay(true);
+            publishPost.setTop(publishVo.getTop());
             pubPostDao.save(publishPost);
         }
     }
 
     @Override
     public void unpublish(String id) {
-        PublishPost publishPost = pubPostDao.findByIdAndShow(id,true);
+        PublishPost publishPost = pubPostDao.findByIdAndDisplay(id,true);
         if(publishPost != null){
-            publishPost.setShow(false);
+            publishPost.setDisplay(false);
+            pubPostDao.save(publishPost);
+        }
+    }
+
+    @Override
+    public PublishVo getPublishPost(String id) {
+        PublishPost publishPost = pubPostDao.findByIdAndDisplay(id, true);
+        if(publishPost == null){
+            return null;
+        }
+
+        PublishVo publishVo = new PublishVo();
+        publishVo.setId(id);
+        publishVo.setTop(publishPost.getTop());
+
+        return publishVo;
+    }
+
+    @Override
+    public void top(PublishVo publishVo) {
+        PublishPost publishPost = pubPostDao.findOne(publishVo.getId());
+        if(publishPost == null){
+            publishPost.setTop(publishVo.getTop());
             pubPostDao.save(publishPost);
         }
     }

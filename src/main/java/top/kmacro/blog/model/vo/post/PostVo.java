@@ -11,6 +11,7 @@ public class PostVo {
     protected String summary;
     protected String[] tags;
     protected Byte type;
+    protected Byte state;
     protected String verDate;
     protected String createDate;
     protected Integer readNum;
@@ -24,6 +25,7 @@ public class PostVo {
         likeNum = 0;
         commentNum = 0;
         type = (byte)0;
+        state = (byte)0;
         top = false;
     }
 
@@ -81,6 +83,14 @@ public class PostVo {
 
     public void setType(Byte type) {
         this.type = type;
+    }
+
+    public Byte getState() {
+        return state;
+    }
+
+    public void setState(Byte state) {
+        this.state = state;
     }
 
     public String getVerDate() {

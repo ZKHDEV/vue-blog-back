@@ -3,13 +3,14 @@ package top.kmacro.blog.model;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by Zhangkh on 2017-09-14.
  */
 @Entity
 @Table(name = "mb_notice")
-public class Notice {
+public class Notice implements Serializable{
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")

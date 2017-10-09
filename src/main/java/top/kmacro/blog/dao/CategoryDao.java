@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import top.kmacro.blog.model.Category;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,6 +12,6 @@ import java.util.Set;
  */
 public interface CategoryDao extends CrudRepository<Category,String>,JpaSpecificationExecutor<Category> {
     Set<Category> findAllByIdIn(String[] cateIds);
-    Set<Category> findAllByUser_TokenOrderByCreateTimeAsc(String token);
+    List<Category> findAllByUser_TokenOrderByCreateDateAsc(String token);
     Category findByLabelAndUser_Token(String label, String token);
 }
