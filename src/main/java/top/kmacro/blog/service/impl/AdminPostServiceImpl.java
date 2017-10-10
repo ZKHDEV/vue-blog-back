@@ -66,6 +66,7 @@ public class AdminPostServiceImpl implements AdminPostService {
                     predicates.add(criteriaBuilder.between(root.get("createDate"),start,end));
                 }
                 predicates.add(criteriaBuilder.equal(root.join("user").get("token"),tokenManager.currentToken()));
+                predicates.add(criteriaBuilder.equal(root.get("recycle"),false));
 
                 if(StringUtils.isEmpty(searchVo.getOrderCol())){
                     searchVo.setOrderCol("createDate");
@@ -85,31 +86,29 @@ public class AdminPostServiceImpl implements AdminPostService {
         List<PostVo> resultList = new ArrayList<PostVo>();
         for(SavePost post : postPage.getContent()){
             PostVo postVo = new PostVo();
+            BeanUtils.copyProperties(post,postVo);
             //查询文章发布信息
-            PublishPost publishPost = pubPostDao.findByIdAndDisplay(post.getId(),true);
-
+            PublishPost publishPost = pubPostDao.findOne(post.getId());
+            Boolean pubFlag = false;    //发布状态标记
             if(publishPost != null){
-                if(searchVo.getState() != null && searchVo.getState() != (byte)1){
-                    continue;
-                }
-                //筛选（非）置顶文章
-                if(searchVo.getTop() != null){
-                    if(!searchVo.getTop().equals(publishPost.getTop())){
-                        continue;
-                    }
-                }
-                //填充文章发布信息
                 postVo.setReadNum(publishPost.getReadNum());
                 postVo.setLikeNum(publishPost.getLikeNum());
                 postVo.setCommentNum(publishPost.getCommentSet().size());
                 postVo.setTop(publishPost.getTop());
-                postVo.setState((byte)1);
-            } else {
-                if(searchVo.getState() != null && searchVo.getState() != (byte)0){
-                    continue;
+                if(publishPost.getDisplay() == true) {
+                    postVo.setState((byte)1);
+                    pubFlag = true;
                 }
             }
-            BeanUtils.copyProperties(post,postVo);
+
+            //置顶状态筛选
+            if(searchVo.getTop() != null && (pubFlag == false || searchVo.getTop() != publishPost.getTop()))continue;
+
+            //发布状态筛选
+            if(searchVo.getState() != null){
+                Boolean searchState = (searchVo.getState() == (byte)1) ? true : false;
+                if(searchState != pubFlag) continue;
+            }
 
             //文章类别信息处理
             Set<Category> categorySet = post.getCategorySet();
@@ -151,6 +150,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             if(savePost != null){
                 VersionPost versionPost = new VersionPost();
                 BeanUtils.copyProperties(savePost,versionPost);
+                versionPost.setCategorySet(new HashSet<Category>(savePost.getCategorySet()));
                 verPostDao.save(versionPost);
             }
         }
@@ -182,6 +182,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         //格式化返回文章版本日期
         saveVo.setVerDate(DateTimeUtils.dateToString(DateTimeUtils.YMDHMS,savePost.getVerDate()));
+        saveVo.setId(savePost.getId());
         return saveVo;
     }
 
@@ -266,6 +267,8 @@ public class AdminPostServiceImpl implements AdminPostService {
             } else {
                 Date createDate = publishPost.getCreateDate();
                 BeanUtils.copyProperties(savePost,publishPost);
+                //深克隆（hibernate不允许引用的Set是同一个Set）
+                publishPost.setCategorySet(new HashSet<Category>(savePost.getCategorySet()));
 
                 publishPost.setCreateDate(createDate);
             }

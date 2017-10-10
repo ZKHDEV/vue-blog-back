@@ -30,7 +30,7 @@ public class AdminPostController extends BaseController{
             return FormatValidMessage(result);
         }
         if(adminPostService.titleExisted(saveVo.getId(),saveVo.getTitle())){
-            return new Response(-12,"文章名已存在");
+            return new Response(-12,"文章名已存在或存在于回收站中");
         }
 
         SaveVo backSaveVo = adminPostService.save(saveVo);
