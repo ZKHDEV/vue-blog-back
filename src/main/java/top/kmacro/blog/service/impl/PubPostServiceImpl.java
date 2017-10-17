@@ -10,8 +10,9 @@ import org.springframework.util.StringUtils;
 import top.kmacro.blog.dao.PubPostDao;
 import top.kmacro.blog.model.Category;
 import top.kmacro.blog.model.PublishPost;
+import top.kmacro.blog.model.vo.KValueVo;
 import top.kmacro.blog.model.vo.PageVo;
-import top.kmacro.blog.model.vo.post.PageSearchVo;
+import top.kmacro.blog.model.vo.post.PhoneSearchVo;
 import top.kmacro.blog.model.vo.post.PostVo;
 import top.kmacro.blog.service.PubPostService;
 import top.kmacro.blog.utils.DateTimeUtils;
@@ -50,14 +51,14 @@ public class PubPostServiceImpl implements PubPostService {
     }
 
     @Override
-    public PageVo getPage(PageSearchVo pageSearchVo) {
+    public PageVo getPage(PhoneSearchVo phoneSearchVo) {
         Sort.Order topOrder = new Sort.Order(Sort.Direction.DESC, "top");
         Sort.Order dateOrder = new Sort.Order(Sort.Direction.DESC, "createDate");
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(topOrder);
         orderList.add(dateOrder);
         Sort sort = new Sort(orderList);
-        Page<PublishPost> postPage = pubPostDao.findAllByUser_PhoneAndDisplay(pageSearchVo.getPhone(),true,new PageRequest(pageSearchVo.getPageNum() - 1, pageSearchVo.getPageSize(), sort));
+        Page<PublishPost> postPage = pubPostDao.findAllByUser_PhoneAndDisplay(phoneSearchVo.getPhone(),true,new PageRequest(phoneSearchVo.getPageNum() - 1, phoneSearchVo.getPageSize(), sort));
 
         // 格式化查询结果
         List<PostVo> resultList = new ArrayList<PostVo>();
@@ -67,6 +68,19 @@ public class PubPostServiceImpl implements PubPostService {
 
         PageVo<PostVo> pageVo = new PageVo(postPage.getTotalElements(),resultList);
         return pageVo;
+    }
+
+    @Override
+    public List<KValueVo> getNewKVListByPhone(String phone) {
+        List<PublishPost> postList = pubPostDao.findTop6ByUser_PhoneAndDisplayOrderByCreateDateDesc(phone,true);
+
+        // 格式化查询结果
+        List<KValueVo> kValueVoList = new ArrayList<KValueVo>();
+        for(PublishPost publishPost : postList){
+            kValueVoList.add(new KValueVo(publishPost.getId(),publishPost.getTitle()));
+        }
+
+        return kValueVoList;
     }
 
     @Override

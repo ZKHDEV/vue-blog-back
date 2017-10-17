@@ -8,8 +8,9 @@ import top.kmacro.blog.model.Category;
 import top.kmacro.blog.model.User;
 import top.kmacro.blog.model.vo.KValueVo;
 import top.kmacro.blog.model.vo.Response;
-import top.kmacro.blog.model.vo.category.FindAllVo;
+import top.kmacro.blog.model.vo.category.CateVo;
 import top.kmacro.blog.model.vo.category.SaveVo;
+import top.kmacro.blog.security.IgnoreSecurity;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.CategoryService;
 import top.kmacro.blog.service.UserService;
@@ -56,4 +57,21 @@ public class CategoryController extends BaseController {
     public Response getAllKVList(){
         return new Response(0,"success", categoryService.getAllKVList());
     }
+
+    @IgnoreSecurity
+    @GetMapping("/get_kv_list_by_phone/{phone}")
+    public Response getKVListByPhone(@PathVariable(value = "phone",required = true) String phone){
+        return new Response(0,"success", categoryService.getKVListByPhone(phone));
+    }
+
+    @PostMapping("/search")
+    public Response search(@RequestBody CateVo cateVo){
+        return new Response(0,"success", categoryService.search(cateVo.getLabel()));
+    }
+
+    @GetMapping("/get_cate/{id}")
+    public Response getCate(@PathVariable(name = "id",required = true) String id){
+        return new Response(0,"success", categoryService.getCate(id));
+    }
+
 }

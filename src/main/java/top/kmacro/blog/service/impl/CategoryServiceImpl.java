@@ -7,8 +7,10 @@ import org.springframework.util.StringUtils;
 import top.kmacro.blog.dao.*;
 import top.kmacro.blog.model.*;
 import top.kmacro.blog.model.vo.KValueVo;
+import top.kmacro.blog.model.vo.category.CateVo;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.CategoryService;
+import top.kmacro.blog.utils.DateTimeUtils;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
@@ -40,6 +42,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private TokenManager tokenManager;
 
+    private CateVo parseCateToCateVo(Category category){
+        CateVo cateVo = new CateVo();
+        cateVo.setId(category.getId());
+        cateVo.setCreateDate(DateTimeUtils.dateToString(DateTimeUtils.YMDHMS, category.getCreateDate()));
+        cateVo.setLabel(category.getLabel());
+        return cateVo;
+    }
+
     @Override
     public void save(String id, String label) {
         Category category = null;
@@ -64,31 +74,15 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(String id) {
         Category category = categoryDao.findOne(id);
         if(category != null){
-            //移除分类为删除分类的编辑文章的分类对象
-            Set<SavePost> savePostSet = savePostDao.findAllByCategorySetContains(category);
-            if(savePostSet != null && savePostSet.size() > 0){
-                for (SavePost savePost : savePostSet){
-                    savePost.getCategorySet().remove(category);
-                    savePostDao.save(savePost);
-                }
+            if(category.getSavePostSet() != null){
+                category.getSavePostSet().clear();
             }
-            //移除分类为删除分类的发布文章的分类对象
-            Set<PublishPost> pubPostSet = pubPostDao.findAllByCategorySetContains(category);
-            if(pubPostSet != null && pubPostSet.size() > 0){
-                for (PublishPost publishPost : pubPostSet){
-                    publishPost.getCategorySet().remove(category);
-                    pubPostDao.save(publishPost);
-                }
+            if(category.getPubPostSet() != null){
+                category.getPubPostSet().clear();
             }
-            //移除分类为删除分类的版本文章的分类对象
-            Set<VersionPost> verPostSet = verPostDao.findAllByCategorySetContains(category);
-            if(verPostSet != null && verPostSet.size() > 0){
-                for (VersionPost versionPost : verPostSet){
-                    versionPost.getCategorySet().remove(category);
-                    verPostDao.save(versionPost);
-                }
+            if(category.getVerPostSet() != null){
+                category.getVerPostSet().clear();
             }
-            //删除分类
             categoryDao.delete(id);
         }
     }
@@ -100,8 +94,7 @@ public class CategoryServiceImpl implements CategoryService {
         // 格式化查询结果
         List<KValueVo> kValueVoList = new ArrayList<KValueVo>();
         for(Category category : categorySet){
-            KValueVo kValueVo = new KValueVo(category.getId(),category.getLabel());
-            kValueVoList.add(kValueVo);
+            kValueVoList.add(new KValueVo(category.getId(),category.getLabel()));
         }
         return kValueVoList;
     }
@@ -133,5 +126,40 @@ public class CategoryServiceImpl implements CategoryService {
             return kValueVo;
         }
         return null;
+    }
+
+    @Override
+    public List<KValueVo> getKVListByPhone(String phone) {
+        List<Category> categorySet = categoryDao.findAllByUser_PhoneOrderByCreateDateAsc(phone);
+
+        // 格式化查询结果
+        List<KValueVo> kValueVoList = new ArrayList<KValueVo>();
+        for(Category category : categorySet){
+            kValueVoList.add(new KValueVo(category.getId(),category.getLabel()));
+        }
+        return kValueVoList;
+    }
+
+    @Override
+    public List<CateVo> search(String label) {
+        label = label == null ? "" : label;
+        List<Category> categoryList = categoryDao.findAllByUser_TokenAndLabelLikeOrderByCreateDateAsc( tokenManager.currentToken(), '%' + label + '%');
+        List<CateVo> cateVos = null;
+        if(categoryList != null && categoryList.size() > 0){
+            cateVos = new ArrayList<>();
+            for(Category category : categoryList){
+                CateVo cateVo = parseCateToCateVo(category);
+                if(category.getSavePostSet() != null){
+                    cateVo.setTotal(category.getSavePostSet().size());
+                }
+                cateVos.add(cateVo);
+            }
+        }
+        return  cateVos;
+    }
+
+    @Override
+    public CateVo getCate(String id) {
+        return parseCateToCateVo(categoryDao.findById(id));
     }
 }

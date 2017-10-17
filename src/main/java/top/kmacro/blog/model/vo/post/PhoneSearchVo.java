@@ -1,9 +1,14 @@
 package top.kmacro.blog.model.vo.post;
 
-public class PageSearchVo {
+public class PhoneSearchVo {
     private String phone;
     private Integer pageSize;
     private Integer pageNum;
+
+    public PhoneSearchVo() {
+        pageSize = 6;
+        pageNum = 1;
+    }
 
     public String getPhone() {
         return phone;

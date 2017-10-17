@@ -1,6 +1,7 @@
 package top.kmacro.blog.service;
 
 import top.kmacro.blog.model.vo.KValueVo;
+import top.kmacro.blog.model.vo.category.CateVo;
 import top.kmacro.blog.model.vo.post.SearchVo;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface CategoryService {
     List<KValueVo> getAllKVList();
     Boolean labelExisted(String id, String label);
     KValueVo getOneKVByLabel(String label);
+    List<KValueVo> getKVListByPhone(String phone);
+    List<CateVo> search(String label);
+    CateVo getCate(String id);
 }
