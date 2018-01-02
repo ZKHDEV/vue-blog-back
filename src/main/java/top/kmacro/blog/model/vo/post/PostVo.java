@@ -1,5 +1,7 @@
 package top.kmacro.blog.model.vo.post;
 
+import top.kmacro.blog.model.vo.user.UserVo;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -20,6 +22,16 @@ public class PostVo {
     private Boolean top;
     private Boolean like;
     private String categories;
+
+    public UserVo getUser() {
+        return user;
+    }
+
+    public void setUser(UserVo user) {
+        this.user = user;
+    }
+
+    private UserVo user;
 
     public PostVo() {
         readNum = 0;

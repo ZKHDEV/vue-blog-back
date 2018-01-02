@@ -1,11 +1,13 @@
 package top.kmacro.blog.controller;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import top.kmacro.blog.model.vo.Response;
+import top.kmacro.blog.model.vo.user.LoginResultVo;
 import top.kmacro.blog.model.vo.user.LoginVo;
 import top.kmacro.blog.model.vo.user.ShowVo;
 import top.kmacro.blog.security.IgnoreSecurity;
@@ -64,7 +66,10 @@ public class AccountController extends BaseController {
             user.setOverTime(new Date());
             userService.save(user);
 
-            response.setData(token);
+            LoginResultVo loginResultVo = new LoginResultVo();
+            BeanUtils.copyProperties(user, loginResultVo);
+
+            response.setData(loginResultVo);
             return response;
         }
     }

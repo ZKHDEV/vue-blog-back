@@ -19,6 +19,7 @@ import top.kmacro.blog.model.vo.post.LikeVo;
 import top.kmacro.blog.model.vo.post.PhoneSearchVo;
 import top.kmacro.blog.model.vo.post.PostVo;
 import top.kmacro.blog.model.vo.post.PublishVo;
+import top.kmacro.blog.model.vo.user.UserVo;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.PubPostService;
 import top.kmacro.blog.utils.DateTimeUtils;
@@ -66,6 +67,11 @@ public class PubPostServiceImpl implements PubPostService {
                 postVo.setLike(true);
             }
         }
+
+        //作者信息
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(publishPost.getUser(), userVo);
+        postVo.setUser(userVo);
 
         //其它信息
         if(!StringUtils.isEmpty(publishPost.getTags())){
