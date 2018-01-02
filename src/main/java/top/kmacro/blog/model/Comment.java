@@ -29,11 +29,11 @@ public class Comment implements Serializable{
     @ManyToOne(targetEntity = PublishPost.class,fetch = FetchType.LAZY)
     @JoinColumn(name="post_id")
     private PublishPost post;
-    @ManyToOne(targetEntity = Comment.class,fetch = FetchType.LAZY)
-    @JoinColumn(name="par_comment_id")
-    private Comment parComment;
     @OneToMany(mappedBy = "parComment",fetch = FetchType.LAZY)
-    private Set<Comment> commentSet;
+    private Set<Comment> chiCommentSet;
+    @ManyToOne(targetEntity = Comment.class,fetch = FetchType.LAZY)
+    @JoinColumn(name="par_comm_id")
+    private Comment parComment;
 
     public String getId() {
         return id;
@@ -83,6 +83,10 @@ public class Comment implements Serializable{
         this.post = post;
     }
 
+    public Set<Comment> getChiCommentSet() {
+        return chiCommentSet;
+    }
+
     public Comment getParComment() {
         return parComment;
     }
@@ -91,11 +95,7 @@ public class Comment implements Serializable{
         this.parComment = parComment;
     }
 
-    public Set<Comment> getCommentSet() {
-        return commentSet;
-    }
-
-    public void setCommentSet(Set<Comment> commentSet) {
-        this.commentSet = commentSet;
+    public void setChiCommentSet(Set<Comment> chiCommentSet) {
+        this.chiCommentSet = chiCommentSet;
     }
 }

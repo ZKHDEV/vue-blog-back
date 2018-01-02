@@ -17,7 +17,6 @@ public class PublishPost extends BasePost{
     private Date verDate;
     private Date createDate;
     private Integer readNum;
-    private Integer likeNum;
     private Boolean top;
     private Boolean display;
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
@@ -25,10 +24,12 @@ public class PublishPost extends BasePost{
     private Set<Category> categorySet;
     @OneToMany(mappedBy = "post",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Set<Comment> commentSet;
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinTable(name = "mb_like_post_pub", joinColumns = { @JoinColumn(name = "post_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") })
+    private Set<User> likeUserSet;
 
     public PublishPost() {
         readNum = 0;
-        likeNum = 0;
         top = false;
         display = true;
     }
@@ -65,14 +66,6 @@ public class PublishPost extends BasePost{
         this.readNum = readNum;
     }
 
-    public Integer getLikeNum() {
-        return likeNum;
-    }
-
-    public void setLikeNum(Integer likeNum) {
-        this.likeNum = likeNum;
-    }
-
     public Boolean getTop() {
         return top;
     }
@@ -103,5 +96,13 @@ public class PublishPost extends BasePost{
 
     public void setDisplay(Boolean display) {
         this.display = display;
+    }
+
+    public Set<User> getLikeUserSet() {
+        return likeUserSet;
+    }
+
+    public void setLikeUserSet(Set<User> likeUserSet) {
+        this.likeUserSet = likeUserSet;
     }
 }

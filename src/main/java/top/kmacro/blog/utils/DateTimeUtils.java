@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class DateTimeUtils {
     public static final String YMD = "yyyy-MM-dd";
+    public static final String YMDHM = "yyyy-MM-dd HH:mm:ss";
     public static final String YMDHMS = "yyyy-MM-dd HH:mm:ss";
     /**
      * 日期字符串转Date对象

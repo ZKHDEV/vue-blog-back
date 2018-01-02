@@ -33,7 +33,7 @@ public class AccountController extends BaseController {
 
     @IgnoreSecurity
     @PostMapping("/login")
-    public Response login(@Valid LoginVo loginVo, BindingResult result) {
+    public Response login(@RequestBody @Valid LoginVo loginVo, BindingResult result) {
         if (result.hasErrors()) {
             return FormatValidMessage(result);
         }

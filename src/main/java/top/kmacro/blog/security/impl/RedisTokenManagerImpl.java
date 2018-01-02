@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.utils.CommonUtils;
 
@@ -51,5 +52,14 @@ public class RedisTokenManagerImpl implements TokenManager {
     @Override
     public String currentToken() {
         return tokenCache.get();
+    }
+
+    @Override
+    public String currentUserId() {
+        Object userId = null;
+        if(!StringUtils.isEmpty(currentToken())){
+            userId = valueOperations.get(currentToken());
+        }
+        return userId == null ? null : userId.toString();
     }
 }

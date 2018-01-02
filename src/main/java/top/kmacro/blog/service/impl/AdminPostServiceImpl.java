@@ -1,5 +1,6 @@
 package top.kmacro.blog.service.impl;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -92,7 +93,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             Boolean pubFlag = false;    //发布状态标记
             if(publishPost != null){
                 postVo.setReadNum(publishPost.getReadNum());
-                postVo.setLikeNum(publishPost.getLikeNum());
+                postVo.setLikeNum(publishPost.getLikeUserSet().size());
                 postVo.setCommentNum(publishPost.getCommentSet().size());
                 postVo.setTop(publishPost.getTop());
                 if(publishPost.getDisplay() == true) {
@@ -138,7 +139,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         if (StringUtils.isEmpty(id)){
             return savePostDao.countByTitleAndUser_Token(title,tokenManager.currentToken()) > 0;
         } else {
-            return savePostDao.countByIdAndTitleAndUser_Token(id,title,tokenManager.currentToken()) > 0;
+            return savePostDao.countByIdIsNotAndTitleAndUser_Token(id,title,tokenManager.currentToken()) > 0;
         }
     }
 
@@ -178,6 +179,7 @@ public class AdminPostServiceImpl implements AdminPostService {
                 savePost.setCategorySet(categories);
             }
         }
+
         savePostDao.save(savePost);
 
         //格式化返回文章版本日期

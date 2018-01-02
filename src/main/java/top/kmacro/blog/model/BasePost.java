@@ -1,13 +1,13 @@
 package top.kmacro.blog.model;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @MappedSuperclass
 public class BasePost implements Serializable{
     protected String title;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     protected String content;
     protected String cover;
     protected String summary;

@@ -1,11 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
-  datasource:
-    url: jdbc:mysql://localhost:3306/macro_blog?characterEncoding=utf8&useSSL=true&serverTimezone=UTC
-    username: root
-    password: toor
+      ddl-auto: create
   redis:
     host: 127.0.0.1
     port: 6379

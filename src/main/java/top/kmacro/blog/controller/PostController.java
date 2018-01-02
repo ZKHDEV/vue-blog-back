@@ -3,6 +3,7 @@ package top.kmacro.blog.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.kmacro.blog.model.vo.Response;
+import top.kmacro.blog.model.vo.post.LikeVo;
 import top.kmacro.blog.model.vo.post.PhoneSearchVo;
 import top.kmacro.blog.security.IgnoreSecurity;
 import top.kmacro.blog.service.PubPostService;
@@ -32,4 +33,15 @@ public class PostController extends BaseController {
         return new Response(0,"success", pubPostService.getNewKVListByPhone(phone));
     }
 
+    @IgnoreSecurity
+    @GetMapping("/get_uid_by_postid/{id}")
+    public Response getUserIdByPostId(@PathVariable(name = "id",required = true) String id){
+        return new Response(0,"success", pubPostService.getUserIdByPostId(id));
+    }
+
+    @PostMapping("/like")
+    public Response like(@RequestBody LikeVo likeVo){
+        pubPostService.likePost(likeVo);
+        return new Response(0,"success");
+    }
 }

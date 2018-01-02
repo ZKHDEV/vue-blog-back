@@ -46,6 +46,8 @@ public class User implements Serializable{
     private Set<Message> receiveMsgSet;
 //    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 //    private Set<Notice> noticeSet;
+    @ManyToMany(mappedBy = "likeUserSet",fetch = FetchType.LAZY)
+    private Set<PublishPost> likePostSet;
 
 
     public String getId() {

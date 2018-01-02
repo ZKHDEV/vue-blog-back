@@ -4,21 +4,22 @@ import java.util.Date;
 import java.util.Set;
 
 public class PostVo {
-    protected String id;
-    protected String title;
-    protected String content;
-    protected String cover;
-    protected String summary;
-    protected String[] tags;
-    protected Byte type;
-    protected Byte state;
-    protected String verDate;
-    protected String createDate;
-    protected Integer readNum;
-    protected Integer likeNum;
-    protected Integer commentNum;
-    protected Boolean top;
-    protected String categories;
+    private String id;
+    private String title;
+    private String content;
+    private String cover;
+    private String summary;
+    private String[] tags;
+    private Byte type;
+    private Byte state;
+    private String verDate;
+    private String createDate;
+    private Integer readNum;
+    private Integer likeNum;
+    private Integer commentNum;
+    private Boolean top;
+    private Boolean like;
+    private String categories;
 
     public PostVo() {
         readNum = 0;
@@ -139,6 +140,14 @@ public class PostVo {
 
     public void setTop(Boolean top) {
         this.top = top;
+    }
+
+    public Boolean getLike() {
+        return like;
+    }
+
+    public void setLike(Boolean like) {
+        this.like = like;
     }
 
     public String getCategories() {

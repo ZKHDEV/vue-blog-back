@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import top.kmacro.blog.model.Category;
 import top.kmacro.blog.model.PublishPost;
+import top.kmacro.blog.model.User;
 
 import java.util.List;
 import java.util.Set;
@@ -17,5 +18,5 @@ public interface PubPostDao extends CrudRepository<PublishPost,String>,JpaSpecif
     Set<PublishPost> findAllByCategorySetContains(Category category);
     Long countByIdAndDisplay(String id, Boolean display);
     List<PublishPost> findTop6ByUser_PhoneAndDisplayOrderByCreateDateDesc(String phone, Boolean display);
-
+    Long countByIdAndLikeUserSetContains(String id, User user);
 }

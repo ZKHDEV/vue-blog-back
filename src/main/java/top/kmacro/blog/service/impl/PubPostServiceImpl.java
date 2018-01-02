@@ -1,5 +1,6 @@
 package top.kmacro.blog.service.impl;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,24 +9,38 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import top.kmacro.blog.dao.PubPostDao;
+import top.kmacro.blog.dao.UserDao;
 import top.kmacro.blog.model.Category;
 import top.kmacro.blog.model.PublishPost;
+import top.kmacro.blog.model.User;
 import top.kmacro.blog.model.vo.KValueVo;
 import top.kmacro.blog.model.vo.PageVo;
+import top.kmacro.blog.model.vo.post.LikeVo;
 import top.kmacro.blog.model.vo.post.PhoneSearchVo;
 import top.kmacro.blog.model.vo.post.PostVo;
+import top.kmacro.blog.model.vo.post.PublishVo;
+import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.PubPostService;
 import top.kmacro.blog.utils.DateTimeUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class PubPostServiceImpl implements PubPostService {
 
     @Autowired
     private PubPostDao pubPostDao;
+
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private TokenManager tokenManager;
 
     private PostVo parsePubPostToPostVo(PublishPost publishPost){
         PostVo postVo = new PostVo();
@@ -39,6 +54,17 @@ public class PubPostServiceImpl implements PubPostService {
                 cateNameList.add(category.getLabel());
             }
             postVo.setCategories(String.join(",",cateNameList));
+        }
+
+        //点赞信息
+        postVo.setLikeNum(publishPost.getLikeUserSet().size());
+        String currentToken = tokenManager.currentToken();
+        if(!StringUtils.isEmpty(currentToken)){
+            postVo.setLike(false);
+            User user = userDao.findByToken(currentToken);
+            if(user != null && pubPostDao.countByIdAndLikeUserSetContains(publishPost.getId(), user) > 0){
+                postVo.setLike(true);
+            }
         }
 
         //其它信息
@@ -87,8 +113,34 @@ public class PubPostServiceImpl implements PubPostService {
     public PostVo getPost(String id) {
         PublishPost publishPost = pubPostDao.findByIdAndDisplay(id,true);
         if(publishPost != null){
-            return parsePubPostToPostVo(publishPost);
+            PostVo postVo = parsePubPostToPostVo(publishPost);
+            postVo.setContent(top.kmacro.blog.utils.StringUtils.escapeMarkDownToHtml(postVo.getContent()));
+
+            return postVo;
         }
         return null;
+    }
+
+    @Override
+    public void likePost(LikeVo likeVo) {
+        User user = userDao.findOne(tokenManager.currentUserId());
+        PublishPost publishPost = pubPostDao.findOne(likeVo.getId());
+        if(publishPost != null){
+            if(likeVo.getLike().equals(publishPost.getLikeUserSet().contains(user))){
+                return;
+            }
+            if(likeVo.getLike() == true){
+                publishPost.getLikeUserSet().add(user);
+            } else {
+                publishPost.getLikeUserSet().remove(user);
+            }
+            pubPostDao.save(publishPost);
+        }
+    }
+
+    @Override
+    public String getUserIdByPostId(String id) {
+        PublishPost publishPost = pubPostDao.findOne(id);
+        return publishPost.getUser().getId();
     }
 }

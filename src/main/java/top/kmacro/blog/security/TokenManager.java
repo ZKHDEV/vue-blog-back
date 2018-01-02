@@ -9,4 +9,5 @@ public interface TokenManager {
     void flushToken(String token);
     void clearToken(String token);
     String currentToken();
+    String currentUserId();
 }
