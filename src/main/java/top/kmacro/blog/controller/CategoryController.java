@@ -59,9 +59,9 @@ public class CategoryController extends BaseController {
     }
 
     @IgnoreSecurity
-    @GetMapping("/get_kv_list_by_phone/{phone}")
-    public Response getKVListByPhone(@PathVariable(value = "phone",required = true) String phone){
-        return new Response(0,"success", categoryService.getKVListByPhone(phone));
+    @GetMapping("/get_kv_list_by_uid/{uid}")
+    public Response getKVListByUID(@PathVariable(value = "uid",required = true) String uid){
+        return new Response(0,"success", categoryService.getKVListByUID(uid));
     }
 
     @PostMapping("/search")

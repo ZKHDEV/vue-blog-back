@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.kmacro.blog.model.vo.Response;
 import top.kmacro.blog.model.vo.post.LikeVo;
-import top.kmacro.blog.model.vo.post.PhoneSearchVo;
+import top.kmacro.blog.model.vo.post.PageSearchVo;
 import top.kmacro.blog.security.IgnoreSecurity;
 import top.kmacro.blog.service.PubPostService;
 
@@ -17,8 +17,8 @@ public class PostController extends BaseController {
 
     @IgnoreSecurity
     @PostMapping("/get_page")
-    public Response getPage(@RequestBody PhoneSearchVo phoneSearchVo){
-        return new Response(0,"success", pubPostService.getPage(phoneSearchVo));
+    public Response getPage(@RequestBody PageSearchVo pageSearchVo){
+        return new Response(0,"success", pubPostService.getPage(pageSearchVo));
     }
 
     @IgnoreSecurity
@@ -28,9 +28,9 @@ public class PostController extends BaseController {
     }
 
     @IgnoreSecurity
-    @GetMapping("/get_new_kv_list_by_phone/{phone}")
-    public Response getNewKVListByPhone(@PathVariable(name = "phone",required = true) String phone){
-        return new Response(0,"success", pubPostService.getNewKVListByPhone(phone));
+    @GetMapping("/get_new_kv_list_by_uid/{uid}")
+    public Response getNewKVListByPhone(@PathVariable(name = "uid",required = true) String uid){
+        return new Response(0,"success", pubPostService.getNewKVListByUID(uid));
     }
 
     @IgnoreSecurity

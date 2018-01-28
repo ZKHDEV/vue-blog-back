@@ -14,7 +14,7 @@ public interface CategoryDao extends CrudRepository<Category,String>,JpaSpecific
     Set<Category> findAllByIdIn(String[] cateIds);
     List<Category> findAllByUser_TokenOrderByCreateDateAsc(String token);
     Category findByLabelAndUser_Token(String label, String token);
-    List<Category> findAllByUser_PhoneOrderByCreateDateAsc(String phone);
+    List<Category> findAllByUser_IdOrderByCreateDateAsc(String uid);
     List<Category> findAllByUser_TokenAndLabelLikeOrderByCreateDateAsc(String token, String label);
     Category findById(String id);
 }

@@ -14,9 +14,10 @@ import java.util.Set;
 public interface PubPostDao extends CrudRepository<PublishPost,String>,JpaSpecificationExecutor<PublishPost> {
     Set<PublishPost> findAllByDisplayAndIdIn(Boolean display, String... ids);
     PublishPost findByIdAndDisplay(String id,Boolean display);
-    Page<PublishPost> findAllByUser_PhoneAndDisplay(String userPhone, Boolean display, Pageable pageable);
+    Page<PublishPost> findAllByUser_IdAndDisplay(String userId, Boolean display, Pageable pageable);
+    Page<PublishPost> findAllByUser_IdAndDisplayAndCategorySetContains(String userId, Boolean display, Category category, Pageable pageable);
     Set<PublishPost> findAllByCategorySetContains(Category category);
     Long countByIdAndDisplay(String id, Boolean display);
-    List<PublishPost> findTop6ByUser_PhoneAndDisplayOrderByCreateDateDesc(String phone, Boolean display);
+    List<PublishPost> findTop6ByUser_IdAndDisplayOrderByCreateDateDesc(String userId, Boolean display);
     Long countByIdAndLikeUserSetContains(String id, User user);
 }

@@ -1,6 +1,5 @@
 package top.kmacro.blog.service.impl;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import top.kmacro.blog.dao.CategoryDao;
 import top.kmacro.blog.dao.PubPostDao;
 import top.kmacro.blog.dao.UserDao;
 import top.kmacro.blog.model.Category;
@@ -16,20 +16,16 @@ import top.kmacro.blog.model.User;
 import top.kmacro.blog.model.vo.KValueVo;
 import top.kmacro.blog.model.vo.PageVo;
 import top.kmacro.blog.model.vo.post.LikeVo;
-import top.kmacro.blog.model.vo.post.PhoneSearchVo;
+import top.kmacro.blog.model.vo.post.PageSearchVo;
 import top.kmacro.blog.model.vo.post.PostVo;
-import top.kmacro.blog.model.vo.post.PublishVo;
 import top.kmacro.blog.model.vo.user.UserVo;
 import top.kmacro.blog.security.TokenManager;
 import top.kmacro.blog.service.PubPostService;
 import top.kmacro.blog.utils.DateTimeUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class PubPostServiceImpl implements PubPostService {
@@ -39,6 +35,9 @@ public class PubPostServiceImpl implements PubPostService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Autowired
     private TokenManager tokenManager;
@@ -83,14 +82,26 @@ public class PubPostServiceImpl implements PubPostService {
     }
 
     @Override
-    public PageVo getPage(PhoneSearchVo phoneSearchVo) {
+    public PageVo getPage(PageSearchVo pageSearchVo) {
         Sort.Order topOrder = new Sort.Order(Sort.Direction.DESC, "top");
         Sort.Order dateOrder = new Sort.Order(Sort.Direction.DESC, "createDate");
         List<Sort.Order> orderList = new ArrayList<Sort.Order>();
         orderList.add(topOrder);
         orderList.add(dateOrder);
         Sort sort = new Sort(orderList);
-        Page<PublishPost> postPage = pubPostDao.findAllByUser_PhoneAndDisplay(phoneSearchVo.getPhone(),true,new PageRequest(phoneSearchVo.getPageNum() - 1, phoneSearchVo.getPageSize(), sort));
+
+        Page<PublishPost> postPage = null;
+        Category category = null;
+        String cateId = pageSearchVo.getCateId();
+        if(!StringUtils.isEmpty(cateId)){
+            category = categoryDao.findById(pageSearchVo.getCateId());
+        }
+
+        if(category != null){
+            postPage = pubPostDao.findAllByUser_IdAndDisplayAndCategorySetContains(pageSearchVo.getUid(),true,category,new PageRequest(pageSearchVo.getPageNum() - 1, pageSearchVo.getPageSize(), sort));
+        } else {
+            postPage = pubPostDao.findAllByUser_IdAndDisplay(pageSearchVo.getUid(),true,new PageRequest(pageSearchVo.getPageNum() - 1, pageSearchVo.getPageSize(), sort));
+        }
 
         // 格式化查询结果
         List<PostVo> resultList = new ArrayList<PostVo>();
@@ -103,8 +114,8 @@ public class PubPostServiceImpl implements PubPostService {
     }
 
     @Override
-    public List<KValueVo> getNewKVListByPhone(String phone) {
-        List<PublishPost> postList = pubPostDao.findTop6ByUser_PhoneAndDisplayOrderByCreateDateDesc(phone,true);
+    public List<KValueVo> getNewKVListByUID(String uid) {
+        List<PublishPost> postList = pubPostDao.findTop6ByUser_IdAndDisplayOrderByCreateDateDesc(uid,true);
 
         // 格式化查询结果
         List<KValueVo> kValueVoList = new ArrayList<KValueVo>();

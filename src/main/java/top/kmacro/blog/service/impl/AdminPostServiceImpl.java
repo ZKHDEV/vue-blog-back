@@ -264,7 +264,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             if(publishPost == null){
                 publishPost = new PublishPost();
                 BeanUtils.copyProperties(savePost,publishPost);
-
+                publishPost.setCategorySet(new HashSet<Category>(savePost.getCategorySet()));
                 publishPost.setCreateDate(new Date());
             } else {
                 Date createDate = publishPost.getCreateDate();

@@ -15,7 +15,7 @@ public interface CategoryService {
     List<KValueVo> getAllKVList();
     Boolean labelExisted(String id, String label);
     KValueVo getOneKVByLabel(String label);
-    List<KValueVo> getKVListByPhone(String phone);
+    List<KValueVo> getKVListByUID(String uid);
     List<CateVo> search(String label);
     CateVo getCate(String id);
 }

@@ -129,8 +129,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<KValueVo> getKVListByPhone(String phone) {
-        List<Category> categorySet = categoryDao.findAllByUser_PhoneOrderByCreateDateAsc(phone);
+    public List<KValueVo> getKVListByUID(String uid) {
+        List<Category> categorySet = categoryDao.findAllByUser_IdOrderByCreateDateAsc(uid);
 
         // 格式化查询结果
         List<KValueVo> kValueVoList = new ArrayList<KValueVo>();

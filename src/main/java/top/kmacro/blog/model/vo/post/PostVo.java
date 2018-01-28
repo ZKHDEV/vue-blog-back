@@ -22,15 +22,6 @@ public class PostVo {
     private Boolean top;
     private Boolean like;
     private String categories;
-
-    public UserVo getUser() {
-        return user;
-    }
-
-    public void setUser(UserVo user) {
-        this.user = user;
-    }
-
     private UserVo user;
 
     public PostVo() {
@@ -40,6 +31,14 @@ public class PostVo {
         type = (byte)0;
         state = (byte)0;
         top = false;
+    }
+
+    public UserVo getUser() {
+        return user;
+    }
+
+    public void setUser(UserVo user) {
+        this.user = user;
     }
 
     public String getId() {

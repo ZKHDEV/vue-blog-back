@@ -42,7 +42,7 @@ public class SecurityAspect {
         String token = WebContext.getRequest().getHeader(TOKEN_NAME);
         // 检查 token 有效性
         if (StringUtils.isEmpty(token) || !tokenManager.checkToken(token)) {
-            WebContext.getResponse().getWriter().write("{ 'code': -1, 'msg':'Token is invalid'}");
+            WebContext.getResponse().getWriter().write("{ \"code\": -1, \"msg\":\"Token is invalid\"}");
             return null;
         }
         // 更新 token 过期时间

@@ -89,6 +89,7 @@ public class AccountController extends BaseController {
             if (user == null) {
                 user = new User();
                 user.setPhone(phone);
+                user.setNickName(phone);
                 user.setAuth(false);
                 user.setSignTime(currentTime);
             }
